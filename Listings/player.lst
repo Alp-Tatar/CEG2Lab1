@@ -1,0 +1,318 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         
+    2 00000000                 AREA             |.text|, CODE, READONLY
+    3 00000000                 PRESERVE8                    ;
+    4 00000000                 THUMB                        ;
+    5 00000000         
+    6 00000000         
+    7 00000000                 EXPORT           update_points_s
+    8 00000000         
+    9 00000000         update_points_s
+                               FUNCTION                     ; char update_point
+                                                            s_s(player_t *playe
+                                                            r, uint8_t target_i
+                                                            nfo); add points ea
+                                                            rned in the last at
+                                                            tempt to target.
+   10 00000000         ; r0 *player
+   11 00000000         ; r1 target_info
+   12 00000000 B5F0            PUSH             {r4-r7,lr}
+   13 00000002 4602            MOV              r2,r0
+   14 00000004 2300            MOVS             r3,#0x00
+   15 00000006 8810            LDRH             r0,[r2,#0x00]
+   16 00000008 1C40            ADDS             r0,r0,#1
+   17 0000000A 8010            STRH             r0,[r2,#0x00]
+   18 0000000C F001 00FC       AND              r0,r1,#0xFC
+   19 00000010 B1E8            CBZ              r0,label13
+   20 00000012 F001 0002       AND              r0,r1,#0x02
+   21 00000016 B9D0            CBNZ             r0,label13
+   22 00000018 8855            LDRH             r5,[r2,#0x02]
+   23 0000001A 1C6D            ADDS             r5,r5,#1
+   24 0000001C 8055            STRH             r5,[r2,#0x02]
+   25 0000001E F3C1 0082       UBFX             r0,r1,#2,#3
+   26 00000022 F3C1 1441       UBFX             r4,r1,#5,#2
+   27 00000026 1E45            SUBS             r5,r0,#1
+   28 00000028 1D96            ADDS             r6,r2,#6
+   29 0000002A EB06 0585       ADD              r5,r6,r5,LSL #2
+   30 0000002E 5D2D            LDRB             r5,[r5,r4]
+   31 00000030 1C6D            ADDS             r5,r5,#1
+   32 00000032 B2EF            UXTB             r7,r5
+   33 00000034 1E45            SUBS             r5,r0,#1
+   34 00000036 EB06 0585       ADD              r5,r6,r5,LSL #2
+   35 0000003A 552F            STRB             r7,[r5,r4]
+   36 0000003C 1C5B            ADDS             r3,r3,#1
+   37 0000003E 1E45            SUBS             r5,r0,#1
+   38 00000040 EB06 0585       ADD              r5,r6,r5,LSL #2
+   39 00000044 5D2D            LDRB             r5,[r5,r4]
+   40 00000046 4285            CMP              r5,r0
+   41 00000048 D100            BNE              label14
+   42 0000004A 4403            ADD              r3,r3,r0
+   43 0000004C BF00    label14 NOP
+   44 0000004E 8890    label13 LDRH             r0,[r2,#0x04]
+   45 00000050 4418            ADD              r0,r0,r3
+   46 00000052 8090            STRH             r0,[r2,#0x04]
+   47 00000054 4618            MOV              r0,r3
+   48 00000056 BDF0            POP              {r4-r7,pc}
+   49 00000058 F04F 0000       MOV              R0, #0      ; 
+   50 0000005C 4770            BX               LR          ; return 0
+   51 0000005E                 ENDFUNC
+   52 0000005E         
+   53 0000005E         
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   54 0000005E                 EXPORT           player_get_num_pieces_destroyed
+_s
+   55 0000005E         
+   56 0000005E         player_get_num_pieces_destroyed_s
+                               FUNCTION                     ; int  player_get_n
+                                                            um_pieces_destroyed
+                                                            _s (player_t * play
+                                                            er);player_get_num_
+                                                            pieces_destroyed_s
+   57 0000005E         ; r0 *player
+   58 0000005E B530            PUSH             {r4-r5,lr}
+   59 00000060 4603            MOV              r3,r0
+   60 00000062 2000            MOVS             r0,#0x00
+   61 00000064 2100            MOVS             r1,#0x00
+   62 00000066 E00F            B                label1
+   63 00000068 2200    label5  MOVS             r2,#0x00
+   64 0000006A E008            B                label2
+   65 0000006C 1D9C    label4  ADDS             r4,r3,#6
+   66 0000006E EB04 0481       ADD              r4,r4,r1,LSL #2
+   67 00000072 5CA5            LDRB             r5,[r4,r2]
+   68 00000074 1C4C            ADDS             r4,r1,#1
+   69 00000076 42A5            CMP              r5,r4
+   70 00000078 D100            BNE              label3
+   71 0000007A 1C40            ADDS             r0,r0,#1
+   72 0000007C 1C52    label3  ADDS             r2,r2,#1
+   73 0000007E F1C1 0404 
+                       label2  RSB              r4,r1,#0x04
+   74 00000082 4294            CMP              r4,r2
+   75 00000084 DCF2            BGT              label4
+   76 00000086 1C49            ADDS             r1,r1,#1
+   77 00000088 2904    label1  CMP              r1,#0x04
+   78 0000008A DBED            BLT              label5
+   79 0000008C BD30            POP              {r4-r5,pc}
+   80 0000008E F04F 0000       MOV              R0, #0      ; 
+   81 00000092 4770            BX               LR          ; return 0
+   82 00000094                 ENDFUNC
+   83 00000094         
+   84 00000094                 EXPORT           player_done_s
+   85 00000094         
+   86 00000094         player_done_s
+                               FUNCTION                     ; char player_done_
+                                                            s(player_t * player
+                                                            );check if the play
+                                                            er destroyed all pi
+                                                            eces and the game h
+                                                            as ended
+   87 00000094         ; r0 *player
+   88 00000094 B530            PUSH             {r4-r5,lr}
+   89 00000096 4603            MOV              r3,r0
+   90 00000098 2001            MOVS             r0,#0x01
+   91 0000009A 2100            MOVS             r1,#0x00
+   92 0000009C E011            B                label6
+   93 0000009E 2200    label11 MOVS             r2,#0x00
+   94 000000A0 E009            B                label7
+   95 000000A2 1D9C    label10 ADDS             r4,r3,#6
+   96 000000A4 EB04 0481       ADD              r4,r4,r1,LSL #2
+   97 000000A8 5CA5            LDRB             r5,[r4,r2]
+   98 000000AA 1C4C            ADDS             r4,r1,#1
+   99 000000AC 42A5            CMP              r5,r4
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+  100 000000AE DA01            BGE              label8
+  101 000000B0 2000            MOVS             r0,#0x00
+  102 000000B2 E004            B                label9
+  103 000000B4 1C52    label8  ADDS             r2,r2,#1
+  104 000000B6 F1C1 0404 
+                       label7  RSB              r4,r1,#0x04
+  105 000000BA 4294            CMP              r4,r2
+  106 000000BC DCF1            BGT              label10
+  107 000000BE BF00    label9  NOP
+  108 000000C0 1C49            ADDS             r1,r1,#1
+  109 000000C2 2904    label6  CMP              r1,#0x04
+  110 000000C4 DBEB            BLT              label11
+  111 000000C6 BD30            POP              {r4-r5,pc}
+  112 000000C8 F04F 0000       MOV              R0, #0      ; 
+  113 000000CC 4770            BX               LR          ; return 0
+  114 000000CE                 ENDFUNC
+  115 000000CE         
+  116 000000CE                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --apcs=
+interwork --depend=.\objects\player_1.d -o.\objects\player_1.o -I.\RTE\_Target_
+1 -IC:\Users\alpme\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include -
+IC:\Users\alpme\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS
+\Device\ST\STM32F4xx\Include --predefine="__EVAL SETA 1" --predefine="__UVISION
+_VERSION SETA 533" --predefine="_RTE_ SETA 1" --predefine="STM32F417xx SETA 1" 
+--predefine="_RTE_ SETA 1" --list=.\listings\player.lst player.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 2 in file player.s
+   Uses
+      None
+Comment: .text unused
+label1 00000088
+
+Symbol: label1
+   Definitions
+      At line 77 in file player.s
+   Uses
+      At line 62 in file player.s
+Comment: label1 used once
+label10 000000A2
+
+Symbol: label10
+   Definitions
+      At line 95 in file player.s
+   Uses
+      At line 106 in file player.s
+Comment: label10 used once
+label11 0000009E
+
+Symbol: label11
+   Definitions
+      At line 93 in file player.s
+   Uses
+      At line 110 in file player.s
+Comment: label11 used once
+label13 0000004E
+
+Symbol: label13
+   Definitions
+      At line 44 in file player.s
+   Uses
+      At line 19 in file player.s
+      At line 21 in file player.s
+
+label14 0000004C
+
+Symbol: label14
+   Definitions
+      At line 43 in file player.s
+   Uses
+      At line 41 in file player.s
+Comment: label14 used once
+label2 0000007E
+
+Symbol: label2
+   Definitions
+      At line 73 in file player.s
+   Uses
+      At line 64 in file player.s
+Comment: label2 used once
+label3 0000007C
+
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+Symbol: label3
+   Definitions
+      At line 72 in file player.s
+   Uses
+      At line 70 in file player.s
+Comment: label3 used once
+label4 0000006C
+
+Symbol: label4
+   Definitions
+      At line 65 in file player.s
+   Uses
+      At line 75 in file player.s
+Comment: label4 used once
+label5 00000068
+
+Symbol: label5
+   Definitions
+      At line 63 in file player.s
+   Uses
+      At line 78 in file player.s
+Comment: label5 used once
+label6 000000C2
+
+Symbol: label6
+   Definitions
+      At line 109 in file player.s
+   Uses
+      At line 92 in file player.s
+Comment: label6 used once
+label7 000000B6
+
+Symbol: label7
+   Definitions
+      At line 104 in file player.s
+   Uses
+      At line 94 in file player.s
+Comment: label7 used once
+label8 000000B4
+
+Symbol: label8
+   Definitions
+      At line 103 in file player.s
+   Uses
+      At line 100 in file player.s
+Comment: label8 used once
+label9 000000BE
+
+Symbol: label9
+   Definitions
+      At line 107 in file player.s
+   Uses
+      At line 102 in file player.s
+Comment: label9 used once
+player_done_s 00000094
+
+Symbol: player_done_s
+   Definitions
+      At line 86 in file player.s
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Relocatable symbols
+
+   Uses
+      At line 84 in file player.s
+Comment: player_done_s used once
+player_get_num_pieces_destroyed_s 0000005E
+
+Symbol: player_get_num_pieces_destroyed_s
+   Definitions
+      At line 56 in file player.s
+   Uses
+      At line 54 in file player.s
+Comment: player_get_num_pieces_destroyed_s used once
+update_points_s 00000000
+
+Symbol: update_points_s
+   Definitions
+      At line 9 in file player.s
+   Uses
+      At line 7 in file player.s
+Comment: update_points_s used once
+17 symbols
+352 symbols in table
